@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Эмилия и камушки в волосах — v2025-10-07.9</title>
+<title>Эмилия и камушки в волосах — v2025-10-07.10</title>
 
 <link rel="stylesheet" href="css/dflip.min.css" />
 
@@ -72,7 +72,7 @@ body{
   </div>
 </div>
 
-<div class="version-badge">v2025-10-07.9</div>
+<div class="version-badge">v2025-10-07.10</div>
 
 <script src="js/jquery.min.js"></script>
 <script src="js/pdf.min.js"></script>
@@ -84,15 +84,32 @@ if (window.pdfjsLib) {
 <script src="js/three.min.js"></script>
 <script src="js/dflip.min.js"></script>
 
+<!-- === выбор PDF после готовности DOM === -->
 <script>
-/* === выбор PDF по ширине окна === */
-const pdfFile = window.innerWidth < 820
-  ? 'emilia_and_the_pebbles_mobile.pdf'
-  : 'emilia_and_the_pebbles.pdf';
-document.getElementById('book').setAttribute('source', pdfFile);
-console.log('Выбран PDF:', pdfFile);
+document.addEventListener('DOMContentLoaded', function () {
+  const ua = navigator.userAgent || '';
+  const isMobileUA =
+    /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
+    /Telegram/i.test(ua); // Telegram WebView
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  const physW = Math.min(screen.width, screen.height) / dpr;
+  const isCoarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  const useMobile = isMobileUA || isCoarse || physW < 820;
 
-/* === базовые опции === */
+  const pdfFile = useMobile
+    ? 'emilia_and_the_pebbles_mobile.pdf'
+    : 'emilia_and_the_pebbles.pdf';
+
+  const bookEl = document.getElementById('book');
+  if (bookEl) {
+    bookEl.setAttribute('source', pdfFile);
+    console.log('[pdf pick]', { ua, physW, dpr, isCoarse, useMobile, pdfFile });
+  }
+});
+</script>
+
+<!-- === остальной функционал DFlip === -->
+<script>
 var option_book = {
   mockupType: "hard",
   hard: "cover",
@@ -113,7 +130,6 @@ var option_book = {
   backgroundColor: "#e9ecef"
 };
 
-/* === открыть по клику и добавить 3D-корешок === */
 const frame=document.getElementById('book-frame');
 const bookEl=document.getElementById('book');
 frame.addEventListener('click',function openOnce(){
@@ -128,7 +144,6 @@ frame.addEventListener('click',function openOnce(){
   frame.removeEventListener('click',openOnce);
 },{once:true});
 
-/* === unlock звука === */
 document.addEventListener('DOMContentLoaded',()=>{
   const unlock=()=>{
     const t=new Audio('sound/turn2.mp3');t.volume=0;
@@ -140,7 +155,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('keydown',unlock,{once:true});
 });
 
-/* === 3D-корешок === */
 function addSpine3D(flip){
   const scene=flip.scene;
   const H=(flip.view&&(flip.view._h||flip.view.h))||1.05;
