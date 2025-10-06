@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Эмилия и камушки в волосах</title>
 
-  <!-- CSS -->
+  <!-- DFlip CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@1.0.0/css/dflip.min.css">
 
-  <!-- jQuery + PDF.js -->
+  <!-- jQuery и PDF.js -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="js/libs/pdf.min.js"></script>
 
-  <!-- dFlip -->
+  <!-- DFlip JS -->
   <script src="https://cdn.jsdelivr.net/npm/dflip@1.0.0/js/dflip.min.js"></script>
 
   <style>
@@ -44,7 +44,8 @@
 </head>
 <body>
   <div class="frame">
-    <div class="_df_book book"
+    <!-- Сам флипбук -->
+    <div id="book" class="_df_book book"
          source="emilia_and_the_pebbles.pdf"
          backgroundcolor="#e9ecef"
          webgl="true"
@@ -52,5 +53,38 @@
          sound="true">
     </div>
   </div>
+
+  <script>
+    // Параметры книги
+    var option_book = {
+      // твёрдая обложка
+      hard: "cover",
+
+      // авто или разворотный режим
+      pageMode: DFLIP.PAGE_MODE.AUTO,
+      singlePageMode: DFLIP.SINGLE_PAGE_MODE.BOOKLET,
+
+      // тулбар снизу
+      controlsPosition: DFLIP.CONTROLSPOSITION.BOTTOM,
+
+      // отображаемые элементы
+      showDownloadControl: true,
+      showPrintControl: true,
+      showSearchControl: true,
+      showSoundControl: true,
+      showFullscreenControl: true,
+      showFitControl: true,
+
+      // анимация
+      duration: 800,
+
+      // поведение
+      autoEnableThumbnail: false,
+      autoEnableOutline: false,
+
+      // заставка при загрузке
+      backgroundColor: "#e9ecef"
+    };
+  </script>
 </body>
 </html>
