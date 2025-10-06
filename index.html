@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Эмилия и камушки в волосах — v2025-10-07.7</title>
+<title>Эмилия и камушки в волосах — v2025-10-07.8</title>
 
 <link rel="stylesheet" href="css/dflip.min.css" />
 
@@ -73,7 +73,7 @@ body{
   </div>
 </div>
 
-<div class="version-badge">v2025-10-07.7</div>
+<div class="version-badge">v2025-10-07.8</div>
 
 <script src="js/jquery.min.js"></script>
 <script src="js/pdf.min.js"></script>
@@ -86,7 +86,7 @@ if (window.pdfjsLib) {
 <script src="js/dflip.min.js"></script>
 
 <script>
-/* === опции === */
+/* === опции книги === */
 var option_book = {
   mockupType: "hard",
   hard: "cover",
@@ -107,10 +107,10 @@ var option_book = {
   backgroundColor: "#e9ecef"
 };
 
-/* === выбор PDF (desktop / mobile + fallback) === */
+/* === выбор PDF: desktop / mobile === */
 const PDFs = {
-  desktop: ['emilia_and_the_pebbles.pdf', 'pdf/emilia_and_the_pebbles.pdf'],
-  mobile:  ['emilia_and_the_pebbles_mobile.pdf', 'pdf/emilia_and_the_pebbles_mobile.pdf']
+  desktop: ['emilia_and_the_pebbles.pdf'],
+  mobile:  ['emilia_and_the_pebbles_mobile.pdf']
 };
 const params = new URLSearchParams(location.search);
 const override = params.get('pdf'); // mobile|desktop
@@ -119,48 +119,47 @@ const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 const preferred = (override === 'mobile' || override === 'desktop')
     ? override : (isMobile ? 'mobile' : 'desktop');
 
-/* подстрой опции под мобилку */
+/* мобильная адаптация */
 if (preferred === 'mobile') {
   option_book.singlePageMode = DFLIP.SINGLE_PAGE_MODE.SINGLE;
   option_book.pageMode = DFLIP.PAGE_MODE.SINGLE;
   option_book.showPrintControl = false;
 }
 
-/* === функции загрузки === */
-async function fetchFirstAvailable(paths) {
-  const errors = [];
-  for (const p of paths) {
+/* === загрузка PDF === */
+async function fetchPdf(pathList) {
+  for (const p of pathList) {
     try {
-      const r = await fetch(p, {cache:'no-store'});
+      const r = await fetch(p, { cache:'no-store' });
       if (r.ok) {
         const blobUrl = URL.createObjectURL(await r.blob());
-        console.log('[PDF OK]', p);
-        return {blobUrl, path:p};
+        console.log('[PDF loaded]', p);
+        return { blobUrl, path: p };
       }
-      errors.push(`${p} → HTTP ${r.status}`);
-    } catch(e){ errors.push(`${p} → ${e}`); }
+    } catch (e) { console.warn('[fetch fail]', p, e); }
   }
-  throw new Error(errors.join(' | '));
+  throw new Error('Не найден ни один PDF: ' + pathList.join(', '));
 }
-async function setPdfSourceWithFallback() {
+
+async function setPdfSource() {
   try {
-    const primary = await fetchFirstAvailable(PDFs[preferred]);
+    const primary = await fetchPdf(PDFs[preferred]);
     document.getElementById('book').setAttribute('source', primary.blobUrl);
     console.log('Chosen PDF:', preferred, primary.path);
-  } catch (e1) {
-    console.warn('[Primary failed]', preferred, e1.message);
+  } catch (err) {
+    console.warn('[Primary failed]', err);
     const fbKey = preferred === 'mobile' ? 'desktop' : 'mobile';
     try {
-      const fb = await fetchFirstAvailable(PDFs[fbKey]);
+      const fb = await fetchPdf(PDFs[fbKey]);
       document.getElementById('book').setAttribute('source', fb.blobUrl);
       console.log('Fallback PDF:', fbKey, fb.path);
     } catch (e2) {
-      alert('Не удалось загрузить PDF:\n' + e1.message + '\n' + e2.message);
+      alert('Не удалось загрузить ни один PDF');
     }
   }
 }
 
-/* === открыть книгу по клику и добавить 3D-корешок === */
+/* === открыть по клику и добавить 3D-корешок === */
 const frame=document.getElementById('book-frame');
 const bookEl=document.getElementById('book');
 frame.addEventListener('click',function openOnce(){
@@ -175,7 +174,7 @@ frame.addEventListener('click',function openOnce(){
   frame.removeEventListener('click',openOnce);
 },{once:true});
 
-/* === unlock аудио (без дублей) === */
+/* === unlock аудио === */
 document.addEventListener('DOMContentLoaded',()=>{
   const unlock=()=>{
     const t=new Audio('sound/turn2.mp3');t.volume=0;
@@ -202,11 +201,11 @@ function addSpine3D(flip){
   const light=new THREE.PointLight(0xffffff,0.28);
   light.position.set(-0.9,0.6,1.1);
   scene.add(light);
-  console.log('[spine] added');
+  console.log('[spine added]');
 }
 
-/* === запускаем загрузку PDF === */
-setPdfSourceWithFallback();
+/* === запуск === */
+setPdfSource();
 </script>
 </body>
 </html>
