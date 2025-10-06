@@ -3,70 +3,110 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Эмилия и камушки в волосах — v2025-10-06.1</title>
+  <title>Эмилия и камушки в волосах — v2025-10-06.2</title>
 
   <!-- DFlip CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@1.0.0/css/dflip.min.css">
 
-  <!-- jQuery + PDF.js (PDF.js локально, как требует dFlip пути по умолчанию) -->
+  <!-- jQuery + PDF.js -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="js/libs/pdf.min.js"></script>
 
-  <!-- DFlip JS -->
+  <!-- DFlip -->
   <script src="https://cdn.jsdelivr.net/npm/dflip@1.0.0/js/dflip.min.js"></script>
 
   <style>
-    :root { --page-bg:#e9ecef; --frame-bg:#f8f9fa; --frame-bd:#d0d5dd; }
+    :root {
+      --page-bg:#e9ecef;
+      --frame-bg:#f8f9fa;
+      --frame-bd:#d0d5dd;
+    }
     * { box-sizing: border-box; }
     body {
-      margin: 0; background: var(--page-bg); min-height: 100vh;
-      display: grid; place-items: center;
+      margin: 0;
+      background: var(--page-bg);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
       font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
     }
     .frame {
-      width: min(1280px,96vw); height: min(820px,92vh);
-      background: var(--frame-bg); border: 1px solid var(--frame-bd); border-radius: 6px;
-      box-shadow: 0 12px 28px rgba(16,24,40,.18), 0 2px 6px rgba(16,24,40,.08);
-      padding: 12px; display: grid; place-items: center;
+      width: min(1280px,96vw);
+      height: min(820px,92vh);
+      background: var(--frame-bg);
+      border: 1px solid var(--frame-bd);
+      border-radius: 6px;
+      box-shadow: 0 12px 28px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.08);
+      padding: 12px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform .4s ease, box-shadow .4s ease;
     }
-    .book { width: 100%; height: 100%; }
+    .frame:hover {
+      transform: scale(1.02);
+      box-shadow: 0 16px 36px rgba(0,0,0,.25);
+    }
+    .book {
+      width: 100%;
+      height: 100%;
+    }
 
-    /* Лёгкая «кромка» и блик на первой странице — визуальный эффект твёрдой обложки */
+    /* Блик и фактура для твёрдой обложки */
     .dflip .df-page.first .dfp-inner::before {
-      content:""; position:absolute; inset:0; pointer-events:none;
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
       background:
         radial-gradient(120% 100% at 10% 0%, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 55%),
         linear-gradient(135deg, rgba(0,0,0,.06) 0%, rgba(0,0,0,0) 35%),
         repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, rgba(0,0,0,.04) 2px 4px);
-      mix-blend-mode: overlay; border-radius: 2px;
+      mix-blend-mode: overlay;
+      border-radius: 2px;
     }
-    /* Тулбар — снизу */
-    .df-ui .df-controls { bottom: 8px !important; top: auto !important; }
 
-    /* Бейдж версии внизу справа */
+    /* тулбар снизу */
+    .df-ui .df-controls {
+      bottom: 8px !important;
+      top: auto !important;
+    }
+
+    /* бейдж версии */
     .version-badge {
-      position: fixed; right: 12px; bottom: 10px; z-index: 9999;
-      background: rgba(17,24,39,.88); color: #eef2ff; border: 1px solid rgba(255,255,255,.12);
-      padding: 6px 10px; font-size: 12px; border-radius: 8px; letter-spacing: .2px;
+      position: fixed;
+      right: 12px;
+      bottom: 10px;
+      z-index: 9999;
+      background: rgba(17,24,39,.88);
+      color: #eef2ff;
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 8px;
+      letter-spacing: .2px;
       backdrop-filter: saturate(120%) blur(6px);
-      user-select: none; -webkit-user-select: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
   </style>
 </head>
 <body>
-  <div class="frame">
-    <!-- Сам флипбук -->
+  <div class="frame" id="book-frame">
     <div id="book" class="_df_book book"
-         source="emilia_and_the_pebbles.pdf?ver=v2025-10-06.1"
+         source="emilia_and_the_pebbles.pdf?v=2025-10-06.2"
          backgroundcolor="#e9ecef"
-         webgl="true" mockup="true" sound="true">
+         webgl="true"
+         mockup="true"
+         sound="true"
+         autoPlay="false">
     </div>
   </div>
 
-  <div class="version-badge">Emilia Flipbook — v2025-10-06.1</div>
+  <div class="version-badge">Emilia Flipbook — v2025-10-06.2.1</div>
 
   <script>
-    // Опции экземпляра книги: жёсткая обложка + тулбар снизу + все основные контролы
+    // Опции книги
     var option_book = {
       hard: "cover",
       pageMode: DFLIP.PAGE_MODE.AUTO,
@@ -78,11 +118,26 @@
       showSoundControl: true,
       showFullscreenControl: true,
       showFitControl: true,
-      duration: 800,
       autoEnableThumbnail: false,
       autoEnableOutline: false,
+      autoPlay: false, // не открывать сразу
+      startPage: 0,
+      duration: 800,
       backgroundColor: "#e9ecef"
     };
+
+    // Запуск книги только при клике
+    $(document).ready(function() {
+      const book = $('#book');
+      const frame = $('#book-frame');
+      frame.on('click', function() {
+        if (!book.data('opened')) {
+          DFLIP.open(book[0]);
+          book.data('opened', true);
+          frame.css('cursor', 'default');
+        }
+      });
+    });
   </script>
 </body>
 </html>
