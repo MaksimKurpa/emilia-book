@@ -3,58 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Эмилия и камушки в волосах — v2025-10-07.2.1</title>
+  <title>Эмилия и камушки в волосах — v2025-10-07.3</title>
 
   <!-- DFlip CSS -->
   <link rel="stylesheet" href="css/dflip.min.css" />
 
   <style>
-    body{margin:0;background:#e9ecef;min-height:100vh;display:grid;place-items:center;
-         font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    .frame{width:min(1280px,96vw);height:min(820px,92vh);background:#f8f9fa;border:1px solid #d0d5dd;
-           border-radius:6px;box-shadow:0 12px 28px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.08);
-           padding:12px;display:grid;place-items:center;cursor:pointer;transition:transform .3s ease}
+    body{
+      margin:0;background:#e9ecef;min-height:100vh;
+      display:grid;place-items:center;
+      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif
+    }
+    .frame{
+      width:min(1280px,96vw);height:min(820px,92vh);
+      background:#f8f9fa;border:1px solid #d0d5dd;border-radius:6px;
+      box-shadow:0 12px 28px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.08);
+      padding:12px;display:grid;place-items:center;
+      cursor:pointer;transition:transform .3s ease
+    }
     .frame:hover{transform:scale(1.01)}
     .book{width:100%;height:100%}
-    .df-ui .df-controls{bottom:8px!important;top:auto!important} /* тулбар снизу */
-    .version-badge{position:fixed;right:12px;bottom:10px;z-index:9999;background:rgba(17,24,39,.88);color:#eef2ff;
-      border:1px solid rgba(255,255,255,.12);padding:6px 10px;font-size:12px;border-radius:8px;letter-spacing:.2px}
+    .df-ui .df-controls{bottom:8px!important;top:auto!important}
+    .version-badge{
+      position:fixed;right:12px;bottom:10px;z-index:9999;
+      background:rgba(17,24,39,.88);color:#eef2ff;
+      border:1px solid rgba(255,255,255,.12);
+      padding:6px 10px;font-size:12px;border-radius:8px;letter-spacing:.2px;
+      backdrop-filter:saturate(120%) blur(6px)
+    }
   </style>
 </head>
 <body>
 
   <div class="frame" id="book-frame">
     <div id="book" class="_df_book book"
-         source="pdf/emilia_and_the_pebbles.pdf"
+         source="emilia_and_the_pebbles.pdf"
          backgroundcolor="#e9ecef"
          webgl="true" sound="true" autoPlay="false">
     </div>
   </div>
 
-  <div class="version-badge">Emilia Flipbook — v2025-10-07.2.1</div>
+  <div class="version-badge">Emilia Flipbook — v2025-10-07.3</div>
 
-  <!-- ── JS: порядок имеет значение ─────────────────────────────────────────── -->
+  <!-- ── порядок загрузки критичен ── -->
   <script src="js/jquery.min.js"></script>
 
-  <!-- PDF.js + явный путь к воркеру -->
+  <!-- PDF.js + путь к воркеру (в корне) -->
   <script src="js/pdf.min.js"></script>
   <script>
-    // ОБЯЗАТЕЛЬНО: указываем где лежит воркер той же версии, что и pdf.min.js
     if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
     }
   </script>
 
-  <!-- Three.js (WebGL) -->
+  <!-- Three.js -->
   <script src="js/three.min.js"></script>
 
   <!-- DFlip (твоя сборка со встроенным mockup) -->
   <script src="js/dflip.min.js"></script>
 
   <script>
-    // Опции книги (можно менять mockupType: "hard" | "spiral" | "magazine")
+    // ⚙️ настройки книги
     var option_book = {
-      mockupType: "hard",
+      mockupType: "hard",          // "hard" | "spiral" | "magazine"
       hard: "cover",
       autoPlay: false,
       startPage: 0,
@@ -73,7 +84,7 @@
       backgroundColor: "#e9ecef"
     };
 
-    // Открытие по клику (как в демо DearFlip)
+    // 📖 открытие по клику, как в демо DearFlip
     const frame = document.getElementById('book-frame');
     const bookEl = document.getElementById('book');
     frame.addEventListener('click', function openOnce(){
