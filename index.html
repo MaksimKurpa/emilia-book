@@ -42,9 +42,10 @@
     }
   </style>
 </head>
+
 <body>
   <div class="frame">
-    <!-- Сам флипбук -->
+    <!-- Книга -->
     <div id="book" class="_df_book book"
          source="emilia_and_the_pebbles.pdf"
          backgroundcolor="#e9ecef"
@@ -55,34 +56,35 @@
   </div>
 
   <script>
-    // Параметры книги
+    // Настройки dFlip
     var option_book = {
       // твёрдая обложка
       hard: "cover",
 
-      // авто или разворотный режим
+      // авто-режим страниц
       pageMode: DFLIP.PAGE_MODE.AUTO,
       singlePageMode: DFLIP.SINGLE_PAGE_MODE.BOOKLET,
 
       // тулбар снизу
       controlsPosition: DFLIP.CONTROLSPOSITION.BOTTOM,
 
-      // отображаемые элементы
+      // какие кнопки показывать
       showDownloadControl: true,
       showPrintControl: true,
       showSearchControl: true,
       showSoundControl: true,
       showFullscreenControl: true,
       showFitControl: true,
+      showShareControl: true,
 
-      // анимация
+      // анимация перелистывания
       duration: 800,
 
       // поведение
       autoEnableThumbnail: false,
       autoEnableOutline: false,
 
-      // заставка при загрузке
+      // фон и стилизация
       backgroundColor: "#e9ecef"
     };
   </script>
