@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Эмилия и камушки в волосах — v2025-10-07.10</title>
+<title>Эмилия и камушки в волосах — v2025-10-07.12</title>
 
 <link rel="stylesheet" href="css/dflip.min.css" />
 
@@ -24,7 +24,7 @@ body{
 .book{width:100%;height:100%}
 .df-ui .df-controls{bottom:8px!important;top:auto!important}
 
-/* 📘 тени сгиба и желобка */
+/* 📘 тени обложек — эффект корешка */
 .dflip .df-page.first .dfp-inner::before{
   content:"";position:absolute;inset:0 auto 0 0;width:24px;pointer-events:none;
   background:linear-gradient(90deg,
@@ -37,6 +37,7 @@ body{
     rgba(0,0,0,.45) 0%,rgba(0,0,0,.25) 25%,rgba(255,255,255,.15) 60%,rgba(255,255,255,0) 100%);
   mix-blend-mode:multiply;opacity:.75;border-radius:0 2px 2px 0;
 }
+/* 📖 желобок на развороте */
 .dflip .df-spread .df-page.left .dfp-inner::after{
   content:"";position:absolute;top:0;bottom:0;right:-1px;width:26px;pointer-events:none;
   background:radial-gradient(ellipse at right center,
@@ -51,7 +52,7 @@ body{
 }
 .dflip .df-page .dfp-inner{box-shadow:inset 0 0 0.5px rgba(0,0,0,.08)}
 
-/* 🩶 бейдж */
+/* 🩶 мини-бейдж версии */
 .version-badge{
   position:fixed;right:10px;bottom:8px;z-index:9999;
   background:rgba(33,37,41,.72);color:#f8f9fa;
@@ -66,14 +67,15 @@ body{
 
 <div class="frame" id="book-frame">
   <div id="book" class="_df_book book"
-       source=""
+       source=""                      <!-- зададим при open(...) -->
        backgroundcolor="#e9ecef"
        webgl="true" sound="true" autoPlay="false">
   </div>
 </div>
 
-<div class="version-badge">v2025-10-07.10</div>
+<div class="version-badge">v2025-10-07.12</div>
 
+<!-- порядок скриптов важен -->
 <script src="js/jquery.min.js"></script>
 <script src="js/pdf.min.js"></script>
 <script>
@@ -84,32 +86,34 @@ if (window.pdfjsLib) {
 <script src="js/three.min.js"></script>
 <script src="js/dflip.min.js"></script>
 
-<!-- === выбор PDF после готовности DOM === -->
+<!-- выбор PDF (надёжный для Telegram/вебвью) -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const ua = navigator.userAgent || '';
-  const isMobileUA =
-    /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
-    /Telegram/i.test(ua); // Telegram WebView
-  const dpr = Math.max(1, window.devicePixelRatio || 1);
-  const physW = Math.min(screen.width, screen.height) / dpr;
+  const isTG = /Telegram/i.test(ua);
+  const isMobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
   const isCoarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
-  const useMobile = isMobileUA || isCoarse || physW < 820;
+  const narrowVW = matchMedia('(max-width: 820px)').matches
+                || matchMedia('(max-device-width: 820px)').matches;
 
-  const pdfFile = useMobile
+  const useMobile = isTG || isMobileUA || isCoarse || narrowVW;
+
+  window.__PDF_FILE__ = useMobile
     ? 'emilia_and_the_pebbles_mobile.pdf'
     : 'emilia_and_the_pebbles.pdf';
 
-  const bookEl = document.getElementById('book');
-  if (bookEl) {
-    bookEl.setAttribute('source', pdfFile);
-    console.log('[pdf pick]', { ua, physW, dpr, isCoarse, useMobile, pdfFile });
-  }
+  // индикатор (можно удалить)
+  const tag = document.createElement('div');
+  tag.textContent = 'PDF: ' + (useMobile ? 'mobile' : 'desktop');
+  tag.style.cssText =
+    'position:fixed;left:10px;bottom:8px;z-index:9999;background:rgba(0,0,0,.55);'+
+    'color:#fff;padding:4px 6px;border-radius:6px;font:11px/1 system-ui';
+  document.body.appendChild(tag);
 });
 </script>
 
-<!-- === остальной функционал DFlip === -->
 <script>
+/* опции книги */
 var option_book = {
   mockupType: "hard",
   hard: "cover",
@@ -130,24 +134,31 @@ var option_book = {
   backgroundColor: "#e9ecef"
 };
 
-const frame=document.getElementById('book-frame');
-const bookEl=document.getElementById('book');
-frame.addEventListener('click',function openOnce(){
-  DFLIP.open(bookEl);
-  const wait=setInterval(()=>{
-    const flip=DFLIP&&DFLIP.BookInstance;
-    if(!flip||!flip.scene||!window.THREE)return;
+/* открытие по клику + принудительный source */
+const frame = document.getElementById('book-frame');
+const bookEl = document.getElementById('book');
+
+frame.addEventListener('click', function openOnce(){
+  const src = window.__PDF_FILE__ || 'emilia_and_the_pebbles.pdf';
+  DFLIP.open(bookEl, { source: src });   // ← ключевой момент: даём файл напрямую
+
+  // дождёмся создания сцены и добавим 3D-корешок
+  const wait = setInterval(()=>{
+    const flip = DFLIP && DFLIP.BookInstance;
+    if (!flip || !flip.scene || !window.THREE) return;
     clearInterval(wait);
     addSpine3D(flip);
   },120);
-  frame.style.cursor='default';
-  frame.removeEventListener('click',openOnce);
-},{once:true});
 
+  frame.style.cursor = 'default';
+  frame.removeEventListener('click', openOnce);
+}, { once:true });
+
+/* unlock аудио (без дублей) */
 document.addEventListener('DOMContentLoaded',()=>{
   const unlock=()=>{
-    const t=new Audio('sound/turn2.mp3');t.volume=0;
-    t.play().then(()=>{t.pause();t.src='';});
+    const t=new Audio('sound/turn2.mp3'); t.volume=0;
+    t.play().then(()=>{ t.pause(); t.src=''; });
     document.removeEventListener('click',unlock);
     document.removeEventListener('keydown',unlock);
   };
@@ -155,21 +166,43 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('keydown',unlock,{once:true});
 });
 
+/* 3D-корешок по реальным габаритам книги */
 function addSpine3D(flip){
-  const scene=flip.scene;
-  const H=(flip.view&&(flip.view._h||flip.view.h))||1.05;
-  const D=(flip.view&&(flip.view._w||flip.view.w))||0.82;
-  const T=0.045;
-  const spine=new THREE.Mesh(
-    new THREE.BoxGeometry(T,H,D),
-    new THREE.MeshStandardMaterial({color:0x2f2f2f,metalness:0.35,roughness:0.65})
+  const scene = flip.scene;
+  if (!scene || !window.THREE) return;
+
+  // найдём корневую группу книги, иначе возьмём всю сцену
+  const root = scene.children.find(o =>
+    /book|pages|wrapper|container/i.test(o.name || '')
+  ) || scene;
+
+  // рассчитаем габариты
+  const box  = new THREE.Box3().setFromObject(root);
+  const size = new THREE.Vector3(); box.getSize(size);
+  const center = new THREE.Vector3(); box.getCenter(center);
+
+  // размеры/позиция корешка
+  const H = size.y * 1.02;      // немного выше книги
+  const D = size.z * 1.02;      // немного глубже
+  const T = size.x * 0.035;     // толщина ~3.5% ширины (настройка)
+  const leftX = box.min.x;      // левый край книги
+
+  const spine = new THREE.Mesh(
+    new THREE.BoxGeometry(T, H, D),
+    new THREE.MeshStandardMaterial({ color: 0x2f2f2f, metalness: 0.35, roughness: 0.65 })
   );
-  spine.position.set(-0.52,0,0);
+  // поставим чуть снаружи, чтобы не «слипся» с обложкой
+  spine.position.set(leftX - T/2 - (size.x * 0.002), center.y, center.z);
+  spine.name = 'custom-spine';
+  spine.castShadow = false; spine.receiveShadow = false; spine.renderOrder = 2;
   scene.add(spine);
-  const light=new THREE.PointLight(0xffffff,0.28);
-  light.position.set(-0.9,0.6,1.1);
+
+  // небольшой свет для блика
+  const light = new THREE.PointLight(0xffffff, 0.32);
+  light.position.set(leftX - size.x*0.4, center.y + size.y*0.3, center.z + size.z);
   scene.add(light);
-  console.log('[spine added]');
+
+  console.log('[spine] added at X=', spine.position.x, {H,D,T});
 }
 </script>
 </body>
