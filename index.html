@@ -3,23 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emilia — Flipbook</title>
+  <title>Эмилия и камушки в волосах</title>
 
-  <!-- dFlip CSS (CDN) -->
+  <!-- CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@1.0.0/css/dflip.min.css">
-  <!-- зависимости -->
+
+  <!-- jQuery + PDF.js -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dflip@1.0.0/js/libs/pdf.min.js"></script>
-  <!-- dFlip JS (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/dflip@1.0.0/js/dflip.min.js" defer></script>
+  <script src="js/libs/pdf.min.js"></script>
+
+  <!-- dFlip -->
+  <script src="https://cdn.jsdelivr.net/npm/dflip@1.0.0/js/dflip.min.js"></script>
 
   <style>
-    body{margin:0;background:#e9ecef;min-height:100vh;display:grid;place-items:center;
-         font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    .frame{width:min(1280px,96vw);height:min(820px,92vh);background:#f8f9fa;border:1px solid #d0d5dd;
-           border-radius:6px;box-shadow:0 12px 28px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.08);padding:12px;
-           display:grid;place-items:center}
-    .book{width:100%;height:100%}
+    body {
+      margin: 0;
+      background: #e9ecef;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
+    }
+    .frame {
+      width: min(1280px, 96vw);
+      height: min(820px, 92vh);
+      background: #f8f9fa;
+      border: 1px solid #d0d5dd;
+      border-radius: 6px;
+      box-shadow: 0 12px 28px rgba(16, 24, 40, 0.18),
+                  0 2px 6px rgba(16, 24, 40, 0.08);
+      padding: 12px;
+      display: grid;
+      place-items: center;
+    }
+    .book {
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 <body>
@@ -27,9 +47,9 @@
     <div class="_df_book book"
          source="emilia_and_the_pebbles.pdf"
          backgroundcolor="#e9ecef"
-         webgl="false"
-         mockup="false"
-         sound="false">
+         webgl="true"
+         mockup="true"
+         sound="true">
     </div>
   </div>
 </body>
